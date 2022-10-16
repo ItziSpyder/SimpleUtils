@@ -12,7 +12,7 @@ public class Messages {
     // §
     static HashMap<String,Long> msgCooldown = new HashMap<>();
 
-    public static String starter = "§7§l(SU) §r§8>> §";
+    public static String starter = "§8>> §";
     public static String noperms = starter + "4You do not have access to this!";
     public static String cantuse = starter + "cYou cannot do this here!";
     public static String cooldown = starter + "CThis action is on cooldown!";

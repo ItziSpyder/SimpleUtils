@@ -49,7 +49,7 @@ public class InventoryManager implements Listener {
 
     // Invsee Manager
     public static void openPlayerInventory(Player player, Player target) {
-        Inventory menu = Bukkit.createInventory(player,54,target.getName() + "'s inventory");
+        Inventory menu = Bukkit.createInventory(player,45,target.getName() + "'s inventory");
 
         menu.setContents(target.getInventory().getContents());
 
