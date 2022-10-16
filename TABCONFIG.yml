@@ -1,0 +1,29 @@
+server:
+  tablist:
+    header:
+    - ^
+    - ''
+    - '&8[&7Improper&fSMP&8]'
+    - '&f&o%server.players% &7&ocurrently online'
+    - '&f&o%server.staffs% &7&ostaff online'
+    - '  '
+    footer:
+    - ''
+    - '     &7Ping-&f %player.ping%    &7TPS-&f %server.tps%     '
+    - '&7Memory-&7 %server.memory%'
+    - '&7Overall Performance-&r %server.performance%'
+    - ' '
+    - '&8&oJoin the discord &7&o/discord'
+  enabled: true
+SPECIAL-KEYS:
+- '%player.ping% = player ping'
+- '%player.name% = player name'
+- '%server.tps% = server tps'
+- '%server.players% = server online players'
+- '%server.max% = server max players'
+- '%server.staffs% = server online staffs'
+- '%server.uptime% = server uptime'
+- '%server.time% = server time'
+- '%server.memory% = server memory usage'
+- '%server.performance% = server overall performance'
+- to use colors '§' will replace '&' but ofc u can stuff use '§'
