@@ -6,6 +6,7 @@ import me.itzispyder.simpleutils.commands.TabCompleters;
 import me.itzispyder.simpleutils.events.EntityEvents;
 import me.itzispyder.simpleutils.events.ModerationStuff;
 import me.itzispyder.simpleutils.files.PlayerHomes;
+import me.itzispyder.simpleutils.files.PlayerListTab;
 import me.itzispyder.simpleutils.files.SpawnControl;
 import me.itzispyder.simpleutils.files.WarpLocations;
 import me.itzispyder.simpleutils.inventory.InventoryManager;
@@ -17,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.LocalDateTime;
 
@@ -45,6 +47,9 @@ public final class SimpleUtils extends JavaPlugin {
         PlayerHomes.setup();
         PlayerHomes.get().options().copyDefaults(true);
         PlayerHomes.save();
+        PlayerListTab.setup();
+        PlayerListTab.get().options().copyDefaults(true);
+        PlayerListTab.save();
 
         // Commands
         getCommand("invsee").setExecutor(new Commands(this));
@@ -142,6 +147,16 @@ public final class SimpleUtils extends JavaPlugin {
                 }
             }
         },0,1);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    p.setPlayerListHeader(PlayerListTab.getHeader(p));
+                    p.setPlayerListHeader(PlayerListTab.getFooter(p));
+                }
+            }
+        }.runTaskTimer(this,0,20);
     }
 
     @Override

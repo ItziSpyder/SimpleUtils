@@ -1,5 +1,6 @@
 package me.itzispyder.simpleutils.utils;
 
+import me.itzispyder.simpleutils.server.Server;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -71,6 +72,19 @@ public class Messages {
 
     public static String implementColors(String string) {
         return string.replaceAll("&","§");
+    }
+
+    public static String implementSymbols(String string, Player player) {
+        String name = string.replaceAll("%player.name%",player.getName());
+        String players = name.replaceAll("%server.players%",String.valueOf(Server.getOnline()));
+        String ping = players.replaceAll("%player.ping%",String.valueOf(player.getPing()));
+        String tps = ping.replaceAll("%server.tps%",String.valueOf(Server.getTps()));
+        String memory = tps.replaceAll("%server.memory%", Server.getMemory());
+        String staffs = memory.replaceAll("%server.staffs%",String.valueOf(Server.getStaffs()));
+        String performance = staffs.replaceAll("%server.performance%",Server.getOverallPerformance());
+        String uptime = performance.replaceAll("%server.uptime%",Server.getUptime());
+        String max = uptime.replaceAll("%server.max%",String.valueOf(Server.getMaxOnline()));
+        return max.replaceAll("%server.time%",Server.getTime());
     }
 
 }
