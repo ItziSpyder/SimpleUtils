@@ -6,6 +6,8 @@ import me.itzispyder.simpleutils.events.ModerationStuff;
 import me.itzispyder.simpleutils.files.SpawnControl;
 import me.itzispyder.simpleutils.utils.ItemManger;
 import me.itzispyder.simpleutils.utils.StringManager;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -265,6 +267,47 @@ public class PerformanceCommands implements CommandExecutor {
                     }
                 } else {
                     StringManager.send(p,StringManager.noperms);
+                }
+            } else if (command.getName().equalsIgnoreCase("discord")) {
+                if (args.length >= 2) {
+                    if (p.isOp()) {
+                        switch (args[0]) {
+                            case "setlink":
+                                String link = args[1];
+                                if (link.contains("https://discord.gg/")) {
+                                    plugin.getConfig().set("server.discord_link",link);
+                                    plugin.saveConfig();
+                                    p.sendMessage(StringManager.starter + "7Linked new discord link! §3" + link);
+                                } else {
+                                    p.sendMessage(StringManager.starter + "cPlease send a valid discord link!");
+                                }
+                                break;
+                        }
+                    } else {
+                        StringManager.send(p,StringManager.noperms);
+                    }
+                } else if (args.length == 1) {
+                    if (p.isOp()) {
+                        switch (args[0]) {
+                            case "remove":
+                                plugin.getConfig().set("server.discord_link",null);
+                                plugin.saveConfig();
+                                p.sendMessage(StringManager.starter + "7Removed the discord link");
+                                break;
+                        }
+                    } else {
+                        StringManager.send(p,StringManager.noperms);
+                    }
+                } else {
+                    String link = plugin.getConfig().getString("server.discord_link");
+                    if (link != null) {
+                        TextComponent message = new TextComponent(link);
+                        message.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,link));
+                        p.sendMessage(StringManager.starter + "7Join our discord!");
+                        p.spigot().sendMessage(message);
+                    } else {
+                        p.sendMessage(StringManager.starter + "7No discord link linked yet!");
+                    }
                 }
             }
 

@@ -78,6 +78,8 @@ public final class SimpleUtils extends JavaPlugin {
         getCommand("freeze").setExecutor(new PerformanceCommands(this));
         getCommand("spawnentities").setExecutor(new PerformanceCommands(this));
         getCommand("spawnentities").setTabCompleter(new TabCompleters());
+        getCommand("discord").setExecutor(new PerformanceCommands(this));
+        getCommand("discord").setTabCompleter(new TabCompleters());
 
         // Events
         getServer().getPluginManager().registerEvents(new InventoryManager(this),this);

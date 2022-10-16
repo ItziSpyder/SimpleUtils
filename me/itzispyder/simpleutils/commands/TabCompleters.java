@@ -62,6 +62,13 @@ public class TabCompleters implements TabCompleter {
             } else if (args.length == 2) {
                 argus.add("§8<spawn count>");
             }
+        } else if (command.getName().equalsIgnoreCase("discord")) {
+            if (args.length == 1) {
+                argus.add("setlink");
+                argus.add("remove");
+            } else if (args.length == 2) {
+                argus.add("§8<your link here>");
+            }
         }
 
         return argus;
