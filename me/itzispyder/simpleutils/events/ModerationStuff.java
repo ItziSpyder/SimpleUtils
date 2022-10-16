@@ -1,6 +1,6 @@
 package me.itzispyder.simpleutils.events;
 
-import me.itzispyder.simpleutils.utils.StringManager;
+import me.itzispyder.simpleutils.utils.Messages;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,7 +24,7 @@ public class ModerationStuff implements Listener {
         Player p = e.getPlayer();
         if (isMuted(p)) {
             e.setCancelled(true);
-            StringManager.send(p,StringManager.starter + "4You are muted");
+            Messages.send(p, Messages.starter + "4You are muted");
         }
     }
 
@@ -56,7 +56,7 @@ public class ModerationStuff implements Listener {
                     || command.contains("/minecraft:")
             ) {
                 e.setCancelled(true);
-                StringManager.send(p,StringManager.starter + "4You are muted");
+                Messages.send(p, Messages.starter + "4You are muted");
             }
         }
     }
@@ -69,14 +69,14 @@ public class ModerationStuff implements Listener {
     public static void mute(Player player) {
         if (!isMuted(player)) {
             muted.add(player);
-            player.sendMessage(StringManager.starter + "4You have been muted");
+            player.sendMessage(Messages.starter + "4You have been muted");
         }
     }
 
     public static void unmute(Player player) {
         if (isMuted(player)) {
             muted.remove(player);
-            player.sendMessage(StringManager.starter + "4You have been unmuted");
+            player.sendMessage(Messages.starter + "4You have been unmuted");
         }
     }
 
@@ -87,14 +87,14 @@ public class ModerationStuff implements Listener {
     public static void freeze(Player player) {
         if (!isFrozen(player)) {
             frozen.add(player);
-            player.sendMessage(StringManager.starter + "4You have been frozen");
+            player.sendMessage(Messages.starter + "4You have been frozen");
         }
     }
 
     public static void unfreeze(Player player) {
         if (isFrozen(player)) {
             frozen.remove(player);
-            player.sendMessage(StringManager.starter + "4You have been unfrozen");
+            player.sendMessage(Messages.starter + "4You have been unfrozen");
         }
     }
 }

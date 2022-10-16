@@ -1,6 +1,7 @@
 package me.itzispyder.simpleutils.commands;
 
 import me.itzispyder.simpleutils.events.EntityEvents;
+import me.itzispyder.simpleutils.files.PlayerHomes;
 import me.itzispyder.simpleutils.files.WarpLocations;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -21,10 +22,10 @@ public class TabCompleters implements TabCompleter {
         ) {
             return WarpLocations.getEntries();
         } else if (command.getName().equalsIgnoreCase("addwarp")) {
-            argus.add("§7<warp name of your choice>");
+            argus.add("§8<warp name of your choice>");
         } else if (command.getName().equalsIgnoreCase("fakechat")) {
             if (args.length >= 2) {
-                argus.add("§7<message>");
+                argus.add("§8<message>");
             } else if (args.length == 1) {
                 for (Player online : Bukkit.getOnlinePlayers()) {
                     argus.add(online.getName());
@@ -69,6 +70,14 @@ public class TabCompleters implements TabCompleter {
             } else if (args.length == 2) {
                 argus.add("§8<your link here>");
             }
+        } else if (command.getName().equalsIgnoreCase("home")
+                || command.getName().equalsIgnoreCase("delhome")
+        ) {
+            return PlayerHomes.getHomes((Player) sender);
+        } else if (command.getName().equalsIgnoreCase("sethome")) {
+            argus.add("§8<home name>");
+        } else if (command.getName().equalsIgnoreCase("broadcast")) {
+            argus.add("§8<message>");
         }
 
         return argus;

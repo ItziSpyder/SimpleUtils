@@ -1,7 +1,7 @@
 package me.itzispyder.simpleutils.events;
 
 import me.itzispyder.simpleutils.files.SpawnControl;
-import me.itzispyder.simpleutils.utils.StringManager;
+import me.itzispyder.simpleutils.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -100,14 +100,14 @@ public class EntityEvents implements Listener {
     public static void addAfk(Player player) {
         if (!isAfk(player)) {
             afkList.put(player,player.getLocation());
-            Bukkit.getServer().broadcastMessage(StringManager.starter + "4§l§oAFK §7§o" + player.getName() + " is now afk");
+            Bukkit.getServer().broadcastMessage(Messages.starter + "4§l§oAFK §7§o" + player.getName() + " is now afk");
         }
     }
 
     public static void removeAfk(Player player) {
         if (isAfk(player)) {
             afkList.remove(player);
-            Bukkit.getServer().broadcastMessage(StringManager.starter + "4§l§oAFK §7§o" + player.getName() + " is no longer afk");
+            Bukkit.getServer().broadcastMessage(Messages.starter + "4§l§oAFK §7§o" + player.getName() + " is no longer afk");
         }
     }
 

@@ -5,10 +5,12 @@ import me.itzispyder.simpleutils.commands.PerformanceCommands;
 import me.itzispyder.simpleutils.commands.TabCompleters;
 import me.itzispyder.simpleutils.events.EntityEvents;
 import me.itzispyder.simpleutils.events.ModerationStuff;
+import me.itzispyder.simpleutils.files.PlayerHomes;
 import me.itzispyder.simpleutils.files.SpawnControl;
 import me.itzispyder.simpleutils.files.WarpLocations;
 import me.itzispyder.simpleutils.inventory.InventoryManager;
-import me.itzispyder.simpleutils.utils.StringManager;
+import me.itzispyder.simpleutils.server.ChatManager;
+import me.itzispyder.simpleutils.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -25,7 +27,7 @@ public final class SimpleUtils extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-            p.sendMessage(StringManager.starter + "a§l( ✔ )");
+            p.sendMessage(Messages.starter + "a§l( ✔ )");
         }
         getServer().getLogger().warning("Enabling SimpleUtils...");
 
@@ -38,30 +40,33 @@ public final class SimpleUtils extends JavaPlugin {
         WarpLocations.setup();
         WarpLocations.get().options().copyDefaults(true);
         WarpLocations.save();
+        PlayerHomes.setup();
+        PlayerHomes.get().options().copyDefaults(true);
+        PlayerHomes.save();
 
         // Commands
-        getCommand("invsee").setExecutor(new Commands());
-        getCommand("ec").setExecutor(new Commands());
-        getCommand("tpa").setExecutor(new Commands());
-        getCommand("tpahere").setExecutor(new Commands());
-        getCommand("tpcancel").setExecutor(new Commands());
-        getCommand("tpaccept").setExecutor(new Commands());
-        getCommand("tpdeny").setExecutor(new Commands());
-        getCommand("addwarp").setExecutor(new Commands());
+        getCommand("invsee").setExecutor(new Commands(this));
+        getCommand("ec").setExecutor(new Commands(this));
+        getCommand("tpa").setExecutor(new Commands(this));
+        getCommand("tpahere").setExecutor(new Commands(this));
+        getCommand("tpcancel").setExecutor(new Commands(this));
+        getCommand("tpaccept").setExecutor(new Commands(this));
+        getCommand("tpdeny").setExecutor(new Commands(this));
+        getCommand("addwarp").setExecutor(new Commands(this));
         getCommand("addwarp").setTabCompleter(new TabCompleters());
-        getCommand("removewarp").setExecutor(new Commands());
+        getCommand("removewarp").setExecutor(new Commands(this));
         getCommand("removewarp").setTabCompleter(new TabCompleters());
-        getCommand("warp").setExecutor(new Commands());
+        getCommand("warp").setExecutor(new Commands(this));
         getCommand("warp").setTabCompleter(new TabCompleters());
-        getCommand("fakechat").setExecutor(new Commands());
+        getCommand("fakechat").setExecutor(new Commands(this));
         getCommand("fakechat").setTabCompleter(new TabCompleters());
-        getCommand("fakeop").setExecutor(new Commands());
-        getCommand("server-info").setExecutor(new Commands());
+        getCommand("fakeop").setExecutor(new Commands(this));
+        getCommand("server-info").setExecutor(new Commands(this));
         getCommand("spawncontrol").setExecutor(new PerformanceCommands(this));
         getCommand("spawncontrol").setTabCompleter(new TabCompleters());
-        getCommand("spawn").setExecutor(new Commands());
+        getCommand("spawn").setExecutor(new Commands(this));
         getCommand("spawn").setTabCompleter(new TabCompleters());
-        getCommand("trash").setExecutor(new Commands());
+        getCommand("trash").setExecutor(new Commands(this));
         getCommand("receivecommandlogs").setExecutor(new PerformanceCommands(this));
         getCommand("afk").setExecutor(new PerformanceCommands(this));
         getCommand("statspaper").setExecutor(new PerformanceCommands(this));
@@ -80,11 +85,20 @@ public final class SimpleUtils extends JavaPlugin {
         getCommand("spawnentities").setTabCompleter(new TabCompleters());
         getCommand("discord").setExecutor(new PerformanceCommands(this));
         getCommand("discord").setTabCompleter(new TabCompleters());
+        getCommand("home").setExecutor(new Commands(this));
+        getCommand("home").setTabCompleter(new TabCompleters());
+        getCommand("sethome").setExecutor(new Commands(this));
+        getCommand("sethome").setTabCompleter(new TabCompleters());
+        getCommand("delhome").setExecutor(new Commands(this));
+        getCommand("delhome").setTabCompleter(new TabCompleters());
+        getCommand("broadcast").setExecutor(new Commands(this));
+        getCommand("broadcast").setTabCompleter(new TabCompleters());
 
         // Events
         getServer().getPluginManager().registerEvents(new InventoryManager(this),this);
         getServer().getPluginManager().registerEvents(new EntityEvents(),this);
         getServer().getPluginManager().registerEvents(new ModerationStuff(),this);
+        getServer().getPluginManager().registerEvents(new ChatManager(),this);
 
         // Items
 
@@ -132,7 +146,7 @@ public final class SimpleUtils extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-            p.sendMessage(StringManager.starter + "c§l( ✕ )");
+            p.sendMessage(Messages.starter + "c§l( ✕ )");
         }
         getServer().getLogger().warning("Disabling SimpleUtils...");
     }
