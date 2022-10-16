@@ -152,8 +152,10 @@ public final class SimpleUtils extends JavaPlugin {
             @Override
             public void run() {
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    p.setPlayerListHeader(PlayerListTab.getHeader(p));
-                    p.setPlayerListHeader(PlayerListTab.getFooter(p));
+                    if (PlayerListTab.isEnabled()) {
+                        p.setPlayerListHeader(PlayerListTab.getHeader(p));
+                        p.setPlayerListFooter(PlayerListTab.getFooter(p));
+                    }
                 }
             }
         }.runTaskTimer(this,0,20);

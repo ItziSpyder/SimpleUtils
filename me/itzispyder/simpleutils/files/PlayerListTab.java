@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class PlayerListTab {
     private static File file;
@@ -44,6 +45,7 @@ public class PlayerListTab {
         if (data.getConfigurationSection("server.tablist") == null) {
             data.set("server.tablist.header",new ArrayList<>());
             data.set("server.tablist.footer",new ArrayList<>());
+            data.set("server.enabled",false);
         }
         data.set("SPECIAL-KEYS",demo);
         save();
@@ -67,11 +69,15 @@ public class PlayerListTab {
 
     public static String getHeader(Player player) {
         try {
+            List<String> headerInput = data.getStringList("server.tablist.header");
             StringBuilder header = new StringBuilder();
-            for (String tabLine : data.getStringList("server.tablist.header")) {
-                header.append(tabLine).append("\n");
+            for (String tabLine : headerInput) {
+                header.append(tabLine);
+                if (!Objects.equals(tabLine, headerInput.get(headerInput.size() - 1))) {
+                    header.append("\n");
+                }
             }
-            return Messages.implementSymbols(Messages.implementColors(String.valueOf(header)),player).trim();
+            return Messages.implementSymbols(Messages.implementColors(String.valueOf(header)),player);
         } catch (IllegalArgumentException | NullPointerException exception) {
             return "";
         }
@@ -79,13 +85,21 @@ public class PlayerListTab {
 
     public static String getFooter(Player player) {
         try {
+            List<String> footerInput = data.getStringList("server.tablist.footer");
             StringBuilder footer = new StringBuilder();
-            for (String tabLine : data.getStringList("server.tablist.header")) {
-                footer.append(tabLine).append("\n");
+            for (String tabLine : footerInput) {
+                footer.append(tabLine);
+                if (!Objects.equals(tabLine, footerInput.get(footerInput.size() - 1))) {
+                    footer.append("\n");
+                }
             }
-            return Messages.implementSymbols(Messages.implementColors(String.valueOf(footer)),player).trim();
+            return Messages.implementSymbols(Messages.implementColors(String.valueOf(footer)),player);
         } catch (IllegalArgumentException | NullPointerException exception) {
             return "";
         }
+    }
+
+    public static boolean isEnabled() {
+        return data.getBoolean("server.enabled");
     }
 }
