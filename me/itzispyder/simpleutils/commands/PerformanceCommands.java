@@ -67,6 +67,7 @@ public class PerformanceCommands implements CommandExecutor {
                         for (Entity entity : SpawnControl.getServerEntities()) {
                             if (entity.getType().equals(type)) {
                                 entity.remove();
+                                count++;
                             }
                         }
                         Messages.bmOp(Messages.starter + "f" + sender.getName() + " §7cleared all §f" + type.name().toLowerCase() + " §f(" + count + ")");
