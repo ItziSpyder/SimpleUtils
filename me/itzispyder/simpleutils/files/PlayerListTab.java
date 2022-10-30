@@ -18,7 +18,7 @@ public class PlayerListTab {
     private static FileConfiguration data;
 
     public static void setup() {
-        file = new File(Bukkit.getServer().getPluginManager().getPlugin("SimpleUtils").getDataFolder(),"TABCONFIG.yml");
+        file = new File(Bukkit.getServer().getPluginManager().getPlugin("SimpleUtils").getDataFolder(),"tabconfig/TABCONFIG.yml");
 
         try {
             if (file.exists()) {

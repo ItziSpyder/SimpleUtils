@@ -1,17 +1,24 @@
 package me.itzispyder.simpleutils.commands;
 
 import me.itzispyder.simpleutils.SimpleUtils;
+import me.itzispyder.simpleutils.events.EntityEvents;
+import me.itzispyder.simpleutils.events.ModerationStuff;
 import me.itzispyder.simpleutils.files.PlayerHomes;
 import me.itzispyder.simpleutils.files.WarpLocations;
 import me.itzispyder.simpleutils.inventory.InventoryManager;
 import me.itzispyder.simpleutils.server.Server;
+import me.itzispyder.simpleutils.utils.ItemManager;
 import me.itzispyder.simpleutils.utils.Messages;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -357,6 +364,202 @@ public class Commands implements CommandExecutor {
                         p.sendMessage(Messages.starter + "cYou do not have any incoming requests!");
                     }
                 }
+
+                // OTHER
+                if (command.getName().equalsIgnoreCase("receivecommandlogs")) {
+                    if (p.isOp()) {
+                        if (!EntityEvents.receivingCommands.contains(p)) {
+                            EntityEvents.receivingCommands.add(p);
+                            p.sendMessage(Messages.starter + "aYou will now start receiving command logs!");
+                        } else {
+                            EntityEvents.receivingCommands.remove(p);
+                            p.sendMessage(Messages.starter + "aYou will no longer receive command logs!");
+                        }
+                    } else {
+                        Messages.send(p, Messages.noperms);
+                    }
+                } else if (command.getName().equalsIgnoreCase("afk")) {
+                    if (EntityEvents.isAfk(p)) {
+                        EntityEvents.removeAfk(p);
+                    } else {
+                        EntityEvents.addAfk(p);
+                    }
+                } else if (command.getName().equalsIgnoreCase("statspaper")) {
+                    if (p.isOp()) {
+                        if (args.length >= 1) {
+                            OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
+                            ItemStack paper = new ItemStack(Material.PAPER);
+                            ItemManager.setAsPlayerStats(paper,target);
+                            p.getWorld().dropItemNaturally(p.getLocation(),paper);
+                        } else {
+                            Messages.send(p, Messages.invalidCmd);
+                        }
+                    } else {
+                        Messages.send(p, Messages.noperms);
+                    }
+                } else if (command.getName().equalsIgnoreCase("server-timedreload")) {
+                    if (p.isOp()) {
+                        if (args.length >= 1) {
+                            try {
+                                int waitTime = Integer.parseInt(args[0]);
+                                runTimedCommand("reload confirm",waitTime);
+                            } catch (IllegalArgumentException exception) {
+                                Messages.send(p, Messages.invalidCmd);
+                            }
+                        } else {
+                            Messages.send(p, Messages.invalidCmd);
+                        }
+                    } else {
+                        Messages.send(p, Messages.noperms);
+                    }
+                } else if (command.getName().equalsIgnoreCase("server-timedrestart")) {
+                    if (p.isOp()) {
+                        if (args.length >= 1) {
+                            try {
+                                int waitTime = Integer.parseInt(args[0]);
+                                runTimedCommand("restart",waitTime);
+                            } catch (IllegalArgumentException exception) {
+                                Messages.send(p, Messages.invalidCmd);
+                            }
+                        } else {
+                            Messages.send(p, Messages.invalidCmd);
+                        }
+                    } else {
+                        Messages.send(p, Messages.noperms);
+                    }
+                } else if (command.getName().equalsIgnoreCase("server-timedshutdown")) {
+                    if (p.isOp()) {
+                        if (args.length >= 1) {
+                            try {
+                                int waitTime = Integer.parseInt(args[0]);
+                                runTimedCommand("stop",waitTime);
+                            } catch (IllegalArgumentException exception) {
+                                Messages.send(p, Messages.invalidCmd);
+                            }
+                        } else {
+                            Messages.send(p, Messages.invalidCmd);
+                        }
+                    } else {
+                        Messages.send(p, Messages.noperms);
+                    }
+                } else if (command.getName().equalsIgnoreCase("clearchat")) {
+                    if (p.isOp()) {
+                        StringBuilder builder = new StringBuilder();
+                        for (int i = 0; i < 690; i ++) {
+                            builder.append("\n ");
+                        }
+                        builder.append(Messages.starter).append("f").append(p.getName()).append(" §7cleared chat");
+                        Bukkit.getServer().broadcastMessage(builder.toString());
+                    } else {
+                        Messages.send(p, Messages.noperms);
+                    }
+                } else if (command.getName().equalsIgnoreCase("mute")) {
+                    if (p.isOp()) {
+                        if (args.length >= 1) {
+                            Player target = Bukkit.getPlayer(args[0]);
+                            if (target != null) {
+                                if (ModerationStuff.isMuted(target)) {
+                                    ModerationStuff.unmute(target);
+                                    p.sendMessage(Messages.starter + "7You have unmuted §f" + target.getName());
+                                } else {
+                                    ModerationStuff.mute(target);
+                                    p.sendMessage(Messages.starter + "7You have muted §f" + target.getName());
+                                }
+                            } else {
+                                p.sendMessage(Messages.starter + "cThat player is either offline or null!");
+                            }
+                        } else {
+                            Messages.send(p, Messages.invalidCmd);
+                        }
+                    } else {
+                        Messages.send(p, Messages.noperms);
+                    }
+                } else if (command.getName().equalsIgnoreCase("freeze")) {
+                    if (p.isOp()) {
+                        if (args.length >= 1) {
+                            Player target = Bukkit.getPlayer(args[0]);
+                            if (target != null) {
+                                if (ModerationStuff.isFrozen(target)) {
+                                    ModerationStuff.unfreeze(target);
+                                    p.sendMessage(Messages.starter + "7You have unfrozen §f" + target.getName());
+                                } else {
+                                    ModerationStuff.freeze(target);
+                                    p.sendMessage(Messages.starter + "7You have frozen §f" + target.getName());
+                                }
+                            } else {
+                                p.sendMessage(Messages.starter + "cThat player is either offline or null!");
+                            }
+                        } else {
+                            Messages.send(p, Messages.invalidCmd);
+                        }
+                    } else {
+                        Messages.send(p, Messages.noperms);
+                    }
+                } else if (command.getName().equalsIgnoreCase("spawnentities")) {
+                    if (p.isOp()) {
+                        if (args.length >= 2) {
+                            if (EntityEvents.getEntityTypes().contains(args[0])) {
+                                try {
+                                    EntityType type = EntityType.valueOf(args[0].toUpperCase());
+                                    int count = Integer.parseInt(args[1]);
+                                    for (int i = 0; i < count; i ++) {
+                                        p.getWorld().spawnEntity(p.getLocation(),type);
+                                    }
+                                    Messages.bmOp(Messages.starter + "f" + p.getName() + " §7spawned §f" + count + " " + type.name().toLowerCase() + "(s)");
+                                } catch (IllegalArgumentException | NullPointerException exception) {
+                                    p.sendMessage(Messages.starter + "cSeems like there's an error, try switching up the command a bit!");
+                                }
+                            } else {
+                                p.sendMessage(Messages.starter + "cWhoa! Not a modded server means no customs mobs lmao");
+                            }
+                        } else {
+                            Messages.send(p, Messages.invalidCmd);
+                        }
+                    } else {
+                        Messages.send(p, Messages.noperms);
+                    }
+                } else if (command.getName().equalsIgnoreCase("discord")) {
+                    if (args.length >= 2) {
+                        if (p.isOp()) {
+                            switch (args[0]) {
+                                case "setlink":
+                                    String link = args[1];
+                                    if (link.contains("https://discord.gg/")) {
+                                        plugin.getConfig().set("server.discord_link",link);
+                                        plugin.saveConfig();
+                                        p.sendMessage(Messages.starter + "7Linked new discord link! §3" + link);
+                                    } else {
+                                        p.sendMessage(Messages.starter + "cPlease send a valid discord link!");
+                                    }
+                                    break;
+                            }
+                        } else {
+                            Messages.send(p, Messages.noperms);
+                        }
+                    } else if (args.length == 1) {
+                        if (p.isOp()) {
+                            switch (args[0]) {
+                                case "remove":
+                                    plugin.getConfig().set("server.discord_link",null);
+                                    plugin.saveConfig();
+                                    p.sendMessage(Messages.starter + "7Removed the discord link");
+                                    break;
+                            }
+                        } else {
+                            Messages.send(p, Messages.noperms);
+                        }
+                    } else {
+                        String link = plugin.getConfig().getString("server.discord_link");
+                        if (link != null) {
+                            TextComponent message = new TextComponent(link);
+                            message.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,link));
+                            p.sendMessage(Messages.starter + "7Join our discord!");
+                            p.spigot().sendMessage(message);
+                        } else {
+                            p.sendMessage(Messages.starter + "7No discord link linked yet!");
+                        }
+                    }
+                }
             } catch (IllegalArgumentException | NullPointerException exception) {
                 p.sendMessage(Messages.starter + "cOops! There seems to be a problem! Please check your command again!");
             }
@@ -394,5 +597,29 @@ public class Commands implements CommandExecutor {
             }
         }
         return null;
+    }
+
+    public static void runTimedCommand(String command, int waitSec) {
+        new BukkitRunnable() {
+            int iterations = 0;
+
+            @Override
+            public void run() {
+                if (iterations < waitSec) {
+                    int timeLeft = waitSec - iterations;
+                    if (timeLeft <= 10) {
+                        Messages.titleAll("§e" + command,"§cin §e" + timeLeft + " §cseconds",0,20,0);
+                        Messages.soundAll(Sound.ENTITY_BLAZE_HURT,10,0.1F);
+                    } else if (timeLeft == waitSec) {
+                        Messages.titleAll("§e" + command,"§cin §e" + timeLeft + " §cseconds",0,100,0);
+                        Messages.soundAll(Sound.ENTITY_WITHER_AMBIENT,10,0.1F);
+                    }
+                    iterations ++;
+                } else {
+                    Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),command);
+                    this.cancel();
+                }
+            }
+        }.runTaskTimer(plugin,0,20);
     }
 }

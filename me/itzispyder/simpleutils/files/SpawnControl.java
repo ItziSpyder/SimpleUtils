@@ -1,19 +1,26 @@
 package me.itzispyder.simpleutils.files;
 
-import me.itzispyder.simpleutils.events.EntityEvents;
+import me.itzispyder.simpleutils.events.SpawnEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SpawnControl {
     private static File file;
     private static FileConfiguration data;
 
-    public static void setup() {
-        file = new File(Bukkit.getServer().getPluginManager().getPlugin("SimpleUtils").getDataFolder(),"spawncontrol.yml");
+    public static void setUp() {
+        file = new File(Bukkit.getServer().getPluginManager().getPlugin("SimpleUtils").getDataFolder(),"options/spawncontrol.yml");
 
         try {
             if (file.exists()) {
@@ -24,10 +31,18 @@ public class SpawnControl {
         }
 
         data = YamlConfiguration.loadConfiguration(file);
-        if (data.getConfigurationSection("server.spawning") == null) {
-            for (String type : EntityEvents.getEntityTypes()) {
-                data.set("server.spawning." + type, true);
+        ConfigurationSection section = data.getConfigurationSection("server.options");
+        if (section == null) {
+            for (EntityType type : EntityType.class.getEnumConstants()) {
+                data.set("server.options.types." + type.name(),true);
             }
+            data.set("server.options.groups.#COMMON",true);
+            data.set("server.options.groups.#NON-LIVING",true);
+            data.set("server.options.groups.#LIVING",true);
+            data.set("server.options.groups.#MONSTER",true);
+            data.set("server.options.groups.#PASSIVE",true);
+            data.set("server.options.groups.#NAMED",true);
+            save();
         }
     }
 
@@ -45,5 +60,59 @@ public class SpawnControl {
 
     public static void reload() {
         data = YamlConfiguration.loadConfiguration(file);
+    }
+
+    public static boolean canSpawn(Entity entity) {
+        if (!data.getBoolean("server.options.types." + entity.getType().name())) {
+            return false;
+        }
+        if (SpawnEvent.isCommon(entity) && !data.getBoolean("server.options.groups.#COMMON")) {
+            return false;
+        }
+        if (SpawnEvent.isLiving(entity) && !data.getBoolean("server.options.groups.#LIVING")) {
+            return false;
+        }
+        if (SpawnEvent.isNonLiving(entity) && !data.getBoolean("server.options.groups.#NON-LIVING")) {
+            return false;
+        }
+        if (SpawnEvent.isMonster(entity) && !data.getBoolean("server.options.groups.#MONSTER")) {
+            return false;
+        }
+        if (SpawnEvent.isPassive(entity) && !data.getBoolean("server.options.groups.#PASSIVE")) {
+            return false;
+        }
+        if (SpawnEvent.isNamed(entity) && !data.getBoolean("server.options.groups.#NAMED")) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static List<String> allGroups() {
+        List<String> list = new ArrayList<>();
+        for (EntityType type : EntityType.class.getEnumConstants()) {
+            list.add(type.name().toLowerCase());
+        }
+        list.remove("player");
+        list.add("#ALL");
+        list.add("#MONSTER");
+        list.add("#PASSIVE");
+        list.add("#NON-LIVING");
+        list.add("#LIVING");
+        list.add("#COMMON");
+        list.add("#NAMED");
+        return list;
+    }
+
+    public static List<Entity> getServerEntities() {
+        List<Entity> list = new ArrayList<>();
+        for (World world : Bukkit.getServer().getWorlds()) {
+            for (Entity entity : world.getEntities()) {
+                if (!(entity instanceof Player)) {
+                    list.add(entity);
+                }
+            }
+        }
+        return list;
     }
 }

@@ -16,7 +16,7 @@ public class PlayerHomes {
     private static FileConfiguration data;
 
     public static void setup() {
-        file = new File(Bukkit.getServer().getPluginManager().getPlugin("SimpleUtils").getDataFolder(),"playerhomes.yml");
+        file = new File(Bukkit.getServer().getPluginManager().getPlugin("SimpleUtils").getDataFolder(),"locations/playerhomes.yml");
 
         try {
             if (file.exists()) {

@@ -15,7 +15,7 @@ public class WarpLocations {
     private static FileConfiguration data;
 
     public static void setup() {
-        file = new File(Bukkit.getServer().getPluginManager().getPlugin("SimpleUtils").getDataFolder(),"warplocations.yml");
+        file = new File(Bukkit.getServer().getPluginManager().getPlugin("SimpleUtils").getDataFolder(),"locations/warplocations.yml");
 
         try {
             if (file.exists()) {

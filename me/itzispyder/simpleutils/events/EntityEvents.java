@@ -16,7 +16,6 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.server.ServerCommandEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -28,17 +27,9 @@ public class EntityEvents implements Listener {
     // Variables
     public static List<Player> receivingCommands = new ArrayList<>();
     public static HashMap<Player, Location> afkList = new HashMap<>();
+    static HashMap<String,Long> clickCooldown = new HashMap<>();
 
     // Events
-    @EventHandler
-    public static void EntitySpawnEvent(EntitySpawnEvent e) {
-        Entity entity = e.getEntity();
-
-        if (!spawnable(entity)) {
-            e.setCancelled(true);
-        }
-    }
-
     @EventHandler
     public static void PlayerCommandEvent(PlayerCommandPreprocessEvent e) {
         Player p = e.getPlayer();
@@ -61,37 +52,51 @@ public class EntityEvents implements Listener {
 
     // Players
     @EventHandler
-    public static void PlayerInteractEvent(PlayerInteractEvent e) {
+    public static boolean PlayerInteractEvent(PlayerInteractEvent e) {
         Player p = e.getPlayer();
         removeAfk(p);
 
         if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK) || e.getAction().equals(Action.RIGHT_CLICK_AIR)) {
             try {
+                if (clickCooldown.containsKey(p.getName()) && clickCooldown.get(p.getName()) > System.currentTimeMillis()) {
+                    return false;
+                }
+
+                clickCooldown.put(p.getName(),System.currentTimeMillis() + (200));
                 ItemStack main = p.getInventory().getItemInMainHand();
 
                 if (p.getInventory().getHelmet().getType().name().contains("HELMET") && main.getType().name().contains("HELMET")) {
                     ItemStack helmet = p.getInventory().getHelmet();
                     p.getInventory().setHelmet(p.getInventory().getItemInMainHand());
                     p.getInventory().setItemInMainHand(helmet);
-                } else if ((p.getInventory().getChestplate().getType().name().contains("CHESTPLATE") || p.getInventory().getChestplate().getType().name().contains("ELYTRA"))
+                    return true;
+                }
+                if ((p.getInventory().getChestplate().getType().name().contains("CHESTPLATE") || p.getInventory().getChestplate().getType().name().contains("ELYTRA"))
                         && (main.getType().name().contains("CHESTPLATE") || main.getType().name().contains("ELYTRA"))
                 ) {
                     ItemStack chestplate = p.getInventory().getChestplate();
                     p.getInventory().setChestplate(p.getInventory().getItemInMainHand());
                     p.getInventory().setItemInMainHand(chestplate);
-                } else if (p.getInventory().getLeggings().getType().name().contains("LEGGINGS") && main.getType().name().contains("LEGGINGS")) {
+                    return true;
+                }
+                if (p.getInventory().getLeggings().getType().name().contains("LEGGINGS") && main.getType().name().contains("LEGGINGS")) {
                     ItemStack leggings = p.getInventory().getLeggings();
                     p.getInventory().setLeggings(p.getInventory().getItemInMainHand());
                     p.getInventory().setItemInMainHand(leggings);
-                } else if (p.getInventory().getBoots().getType().name().contains("BOOTS") && main.getType().name().contains("BOOTS")) {
+                    return true;
+                }
+                if (p.getInventory().getBoots().getType().name().contains("BOOTS") && main.getType().name().contains("BOOTS")) {
                     ItemStack boots = p.getInventory().getBoots();
                     p.getInventory().setBoots(p.getInventory().getItemInMainHand());
                     p.getInventory().setItemInMainHand(boots);
+                    return true;
                 }
             } catch (NullPointerException exception) {
                 // empty
             }
         }
+
+        return true;
     }
 
     @EventHandler
@@ -109,16 +114,6 @@ public class EntityEvents implements Listener {
     }
 
     // Methods
-    public static boolean spawnable(Entity entity) {
-        String typeName = entity.getType().name().toLowerCase();
-
-        if (EntityEvents.getEntityTypes().contains(typeName)) {
-            return SpawnControl.get().getBoolean("server.spawning." + typeName);
-        }
-
-        return false;
-    }
-
     public static List<String> getEntityTypes() {
         List<String> types = new ArrayList<>();
         for (EntityType entityType : EntityType.class.getEnumConstants()) {
