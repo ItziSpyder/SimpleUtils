@@ -114,11 +114,15 @@ public class TabCompleters implements TabCompleter {
                         argus.add("menu");
                         argus.add("disable");
                         argus.add("enable");
+                        argus.add("reload");
+                        argus.add("rl");
                         break;
                     case 2:
                         switch (args[0].toLowerCase()) {
                             case "disable":
                             case "enable":
+                            case "reload":
+                            case "rl":
                                 return SimpleUtils.getPluginList();
                         }
                 }

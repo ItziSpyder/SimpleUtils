@@ -59,6 +59,7 @@ public class WarpLocations {
     public static void deleteEntry(String entry) {
         if (getEntries().contains(entry)) {
             data.set("server.locations." + entry, null);
+            save();
         }
     }
 

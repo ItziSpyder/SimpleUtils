@@ -14,6 +14,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+
+import java.io.File;
 
 public class PerformanceCommands implements CommandExecutor {
     // Commands
@@ -190,28 +193,58 @@ public class PerformanceCommands implements CommandExecutor {
             case "pl":
                 if (args.length >= 2) {
                     Plugin plugin = SimpleUtils.getPlugin(args[1]);
+                    PluginManager pm = Bukkit.getPluginManager();
                     if (plugin == null) {
                         return false;
                     }
                     switch (args[0].toLowerCase()) {
                         case "enable":
                             sender.sendMessage(Messages.starter + "aEnabling plugin §7\"" + plugin.getName() + "\" §a...");
-                            Bukkit.getServer().getPluginManager().enablePlugin(plugin);
+                            pm.enablePlugin(plugin);
                             sender.sendMessage(Messages.starter + "aEnabled §7\"" + plugin.getName() + "\"");
                             break;
                         case "disable":
                             sender.sendMessage(Messages.starter + "cDisabling plugin §7\"" + plugin.getName() + "\" §c...");
-                            Bukkit.getServer().getPluginManager().disablePlugin(plugin);
+                            pm.disablePlugin(plugin);
                             sender.sendMessage(Messages.starter + "cDisabled §7\"" + plugin.getName() + "\"");
+                            break;
+                        case "reload":
+                        case "rl":
+                            sender.sendMessage(Messages.starter + "bReloading plugin §7\"" + plugin.getName() + "\" §b...");
+                            pm.disablePlugin(plugin);
+                            pm.enablePlugin(plugin);
+                            sender.sendMessage(Messages.starter + "bReloaded §7\"" + plugin.getName() + "\"");
+                            break;
+                    }
+                    return true;
+                } else if (args.length == 1) {
+                    PluginManager pm = Bukkit.getPluginManager();
+                    switch (args[0].toLowerCase()) {
+                        case "reload":
+                        case "rl":
+                            sender.sendMessage(Messages.starter + "bReloading all plugins ...");
+                            for (Plugin plugin : pm.getPlugins()) {
+                                if (!plugin.getName().equalsIgnoreCase("ViaVersion")) {
+                                    pm.disablePlugin(plugin);
+                                    pm.enablePlugin(plugin);
+                                }
+                            }
+                            sender.sendMessage(Messages.starter + "bReloaded all plugins !");
+                            break;
+                        case "menu":
+                            if (sender instanceof Player) {
+                                Player p = (Player) sender;
+                                PluginMenu.openPluginMenu(p, PluginMenu.getOccupiedPages() - 1);
+                                return true;
+                            }
                             break;
                     }
                     return true;
                 } else {
                     if (sender instanceof Player) {
-                        Player p = (Player) sender;
-                        PluginMenu.openPluginMenu(p, PluginMenu.getOccupiedPages() - 1);
-                        return true;
+                        ((Player) sender).chat("/simpleutils:pl menu");
                     }
+                    return true;
                 }
         }
         return true;
