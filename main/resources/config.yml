@@ -1,0 +1,13 @@
+config:
+  general:
+    join_clear: false
+    max_pages: 50
+    max_nbt_length: 5000
+    min_nbt_length: 10
+  permissions:
+    requires_op: false
+    nonop_edit: true
+  submissions:
+    enabled: true
+    duplicates: false
+    cooldown: 10
